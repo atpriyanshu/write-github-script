@@ -14,25 +14,47 @@ jobs:
 
     steps:
 
-    - uses: actions/github-script@0.8.0
+      - name: Checkout repo
 
-      with:
+        uses: actions/checkout@v2
 
-        github-token: ${{secrets.GITHUB_TOKEN}}
+      - name: Comment on new issue
 
-        script: |
+        uses: actions/github-script@0.8.0
 
-            github.issues.createComment({
+        with:
 
-            issue_number: context.issue.number,
+          github-token: ${{secrets.GITHUB_TOKEN}}
 
-            owner: context.repo.owner,
+          script: |
 
-            repo: context.repo.repo,
+             const fs = require('fs')
 
-            body: "🎉 You've created this issue comment using GitHub Script!!!"
+             const issueBody = fs.readFileSync(".github/ISSUE_RESPONSES/comment.md", "utf8")
 
-            })
+             github.issues.createComment({
+
+             issue_number: context.issue.number,
+
+             owner: context.repo.owner,
+
+             repo: context.repo.repo,
+
+             body: issueBody
+
+             })
+
+      - name: Add issue to project board
+
+        if: contains(github.event.issue.labels.*.name, 'bug')
+
+        uses: actions/github-script@0.8.0
+
+        with:
+
+          github-token: ${{secrets.GITHUB_TOKEN}}
+
+          script: |
 
             github.projects.createCard({
 
@@ -43,3 +65,5 @@ jobs:
             content_type: "Issue"
 
             });
+
+

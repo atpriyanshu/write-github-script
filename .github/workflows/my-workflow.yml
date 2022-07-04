@@ -14,22 +14,32 @@ jobs:
 
     steps:
 
-      - uses: actions/github-script@0.8.0
+    - uses: actions/github-script@0.8.0
 
-        with:
+      with:
 
-          github-token: ${{secrets.GITHUB_TOKEN}}
+        github-token: ${{secrets.GITHUB_TOKEN}}
 
-          script: |
+        script: |
 
             github.issues.createComment({
 
-              issue_number: context.issue.number,
+            issue_number: context.issue.number,
 
-              owner: context.repo.owner,
+            owner: context.repo.owner,
 
-              repo: context.repo.repo,
+            repo: context.repo.repo,
 
-              body: "🎉 You've created this issue comment using GitHub Script!!!"
+            body: "🎉 You've created this issue comment using GitHub Script!!!"
 
             })
+
+            github.projects.createCard({
+
+            column_id: 18997253,
+
+            content_id: context.payload.issue.id,
+
+            content_type: "Issue"
+
+            });
